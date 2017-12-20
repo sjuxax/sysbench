@@ -535,6 +535,13 @@ sb_event_t file_get_seq_request(void)
   {
     if (position + file_max_request_size > file_size) {
       log_text(LOG_WARNING, "operation exceeding file bounds requested. check block alignment");
+      log_text(LOG_DEBUG, "bounds exceeded in seq test. (%lld > %d)",
+          (position + file_block_size), (int)file_size);
+      log_text(LOG_DEBUG, "pos: %d, size: %d, file_size: %d. clamping requested size to %d",
+          (int)position,
+          (int)file_max_request_size,
+          (int)file_size,
+          (int)(file_size - position));
       file_req->size = file_size - position;
     }
     else
@@ -655,6 +662,13 @@ retry:
 
   if (file_req->pos + file_req->size > file_size) {
     log_text(LOG_WARNING, "operation exceeding file bounds requested. check block alignment");
+    log_text(LOG_DEBUG, "bounds exceeded in rnd test. (%lld > %d)",
+        file_req->pos + file_block_size, (int)file_size);
+    log_text(LOG_DEBUG, "pos: %d, size: %d, file_size: %d. clamping requested size to %d",
+        (int)file_req->pos,
+        (int)file_req->size,
+        (int)file_size,
+        (int)(file_size - file_req->pos));
     file_req->size = file_size - file_req->pos;
   }
 
